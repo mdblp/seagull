@@ -2,7 +2,7 @@
 
 The Tidepool API for managing user metadata.
 
-## Unreleased
+## 0.3.0 - 2019-10-28
 ### Added
 - [PT-733] Display the application version number on the status endpoint (/status).
 
