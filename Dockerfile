@@ -12,8 +12,7 @@ COPY package.json .
 COPY .npmrc .
 
 RUN apk add --no-cache --virtual .build-dependencies git && \
-    yarn install && \
-    yarn cache clean && \
+    npm install && \
     apk del .build-dependencies
 
 USER node
