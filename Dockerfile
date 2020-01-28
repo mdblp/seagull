@@ -1,4 +1,7 @@
-FROM node:10.14.2-alpine
+FROM node:10.15.3-alpine
+
+ARG npm_token
+ENV nexus_token=$npm_token
 
 RUN apk --no-cache update && \
     apk --no-cache upgrade
@@ -6,10 +9,10 @@ RUN apk --no-cache update && \
 WORKDIR /app
 
 COPY package.json .
+COPY .npmrc .
 
 RUN apk add --no-cache --virtual .build-dependencies git && \
-    yarn install && \
-    yarn cache clean && \
+    npm install && \
     apk del .build-dependencies
 
 USER node

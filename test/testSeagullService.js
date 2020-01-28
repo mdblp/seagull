@@ -34,7 +34,8 @@ var env = {
   mongoConnectionString: 'mongodb://localhost/seagull_test',
   // the special config value we pass for testing will enable us to wipe the database
   _wipeTheEntireDatabase: true,
-  logger: { error: console.log, warn: console.log, info: console.log }
+  logger: { error: console.log, warn: console.log, info: console.log },
+  metricsVersion: "test.0.1"
 };
 
 var userApiClient = mockableObject.make('checkToken', 'getAnonymousPair');
@@ -81,6 +82,7 @@ describe('seagull', function () {
         expect(err).to.not.exist;
         expect(obj.body.down).to.eql([]);
         expect(obj.body.up).to.eql(['mongo']);
+        expect(obj.body.version).to.eql("test.0.1");
         done();
       });
   });
