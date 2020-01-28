@@ -20,6 +20,7 @@
 
 var fs = require('fs');
 var config = require('amoeba').config;
+var cs = require('amoeba').mongoUtil.toConnectionString;
 
 function maybeReplaceWithContentsOfFile(obj, field)
 {
@@ -55,10 +56,7 @@ module.exports = (function() {
     throw new Error('Must specify either PORT or HTTPS_PORT in your environment.');
   }
 
-  env.mongoConnectionString = config.fromEnvironment('MONGO_CONNECTION_STRING', 'mongodb://localhost/seagull');
-
-  // Configurable salt for password encryption
-  env.saltDeploy = config.fromEnvironment('SALT_DEPLOY');
+  env.mongoConnectionString = cs('seagull')
 
   env.metrics = {
     // The config object to discover highwater (the metrics API).
@@ -84,7 +82,8 @@ module.exports = (function() {
 
   env.discovery = {
     // The host to connect to for discovery
-    host: config.fromEnvironment('DISCOVERY_HOST')
+    host: config.fromEnvironment('DISCOVERY_HOST'),
+    skipHakken: config.fromEnvironment('SKIP_HAKKEN', false)
   };
 
   // The service name to publish on discovery
@@ -96,6 +95,7 @@ module.exports = (function() {
 
   // The local host to publish to discovery
   env.publishHost = config.fromEnvironment('PUBLISH_HOST');
+
 
   return env;
 })();
