@@ -224,7 +224,7 @@ describe('seagull/users', function () {
       const asyncFunc = sinon.match(function (actual) {
         return sinon.typeOf(actual) === 'asyncfunction';
       }, 'typeOf(asyncfunction)');
-    
+
       expect(mockGatekeeperClient.usersInGroup).to.have.been.calledWithExactly(targetUser.userid, asyncFunc);
     }
 
@@ -442,7 +442,7 @@ describe('seagull/users', function () {
 
           it('returns failure with empty body due to single null user returned by getUsersWithIds', function(done) {
             getUsersWithIdsStub.withArgs([alphaUser.userid, bravoUser.userid]).callsArgWith(1, null, [alphaUser]);
-            test(targetUrl, 500, [expectBodyWithEmptyObject], done);
+            test(targetUrl, 200, [expectBodyWithAlpha], done);
           });
 
           it('returns success and two shared users with query for a case-insensitive partial email that matches both', function(done) {
