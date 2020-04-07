@@ -2,6 +2,10 @@
 
 The Tidepool API for managing user metadata.
 
+## Unreleased
+### Changed
+- PT-1243 Remove Highwater
+
 ## 0.3.2 - 2020-03-30
 ### Fixed
 - PT-1192 Seagull: Don't make blip crash when a user is deleted but present in gatekeeper
