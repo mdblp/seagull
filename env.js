@@ -96,6 +96,10 @@ module.exports = (function() {
   // The local host to publish to discovery
   env.publishHost = config.fromEnvironment('PUBLISH_HOST');
 
-
+  // The log level
+  env.logLevel = config.fromEnvironment('SEAGULL_API_LOGLEVEL', 'info');
+  if (['trace', 'debug', 'info', 'warn', 'error', 'fatal'].indexOf(env.logLevel) < 0) {
+    env.logLevel = 'info';
+  }
   return env;
 })();

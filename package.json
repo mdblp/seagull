@@ -1,6 +1,6 @@
 {
  "name": "seagull",
- "version": "0.3.1",
+ "version": "0.3.2",
  "description": "API for managing user metadata.",
  "main": "lib/index.js",
  "directories": {
@@ -8,7 +8,7 @@
  },
  "scripts": {
   "start": "node lib/index.js",
-  "test": "mocha",
+  "test": "mocha --exit",
   "lint": "jshint"
  },
  "repository": "https://github.com/tidepool-org/seagull.git",
