@@ -34,9 +34,8 @@ var env = {
 var mockCrudHandler = mockableObject.make('getDoc', 'closeDatabase');
 var mockUserApiClient = mockableObject.make('checkToken', 'getAnonymousPair', 'getUserInfo', 'getUsersWithIds');
 var mockGatekeeperClient = mockableObject.make('userInGroup', 'groupsForUser', 'usersInGroup');
-var mockMetrics = mockableObject.make('postServer', 'postThisUser', 'postWithUser');
 
-var seagull = require('../lib/seagullService.js')(env, mockCrudHandler, mockUserApiClient, mockGatekeeperClient, mockMetrics);
+var seagull = require('../lib/seagullService.js')(env, mockCrudHandler, mockUserApiClient, mockGatekeeperClient);
 var supertest = require('supertest')('http://localhost:' + env.httpPort);
 
 describe('seagull/users', function () {
@@ -53,7 +52,6 @@ describe('seagull/users', function () {
     mockableObject.reset(mockCrudHandler);
     mockableObject.reset(mockUserApiClient);
     mockableObject.reset(mockGatekeeperClient);
-    mockableObject.reset(mockMetrics);
   });
 
   describe('GET /users/:userid/users', function (done) {
@@ -127,9 +125,6 @@ describe('seagull/users', function () {
       getUsersWithIdsStub.withArgs([alphaUser.userid, bravoUser.userid]).callsArgWith(1, null, [alphaUser, bravoUser]);
       getDocStub.withArgs(alphaUser.userid).callsArgWith(1, null, alphaDoc);
       getDocStub.withArgs(bravoUser.userid).callsArgWith(1, null, bravoDoc);
-
-      sinon.stub(mockMetrics, 'postServer').callsArg(3);
-      sinon.stub(mockMetrics, 'postThisUser').callsArg(3);
     }
 
     beforeEach(function () {

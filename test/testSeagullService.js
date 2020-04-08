@@ -35,15 +35,14 @@ var env = {
   // the special config value we pass for testing will enable us to wipe the database
   _wipeTheEntireDatabase: true,
   logger: { error: console.log, warn: console.log, info: console.log },
-  metricsVersion: "test.0.1"
+  serviceVersion: "test.0.1"
 };
 
 var userApiClient = mockableObject.make('checkToken', 'getAnonymousPair');
 var gatekeeperClient = mockableObject.make('userInGroup', 'groupsForUser');
-var metrics = mockableObject.make('postServer', 'postThisUser', 'postWithUser');
 
 var dbmongo = require('../lib/mongoCrudHandler.js')(env);
-var seagull = require('../lib/seagullService.js')(env, dbmongo, userApiClient, gatekeeperClient, metrics);
+var seagull = require('../lib/seagullService.js')(env, dbmongo, userApiClient, gatekeeperClient);
 var supertest = require('supertest')('http://localhost:' + env.httpPort);
 
 describe('seagull', function () {
@@ -63,11 +62,8 @@ describe('seagull', function () {
 
   beforeEach(function () {
     mockableObject.reset(userApiClient);
-    mockableObject.reset(metrics);
     mockableObject.reset(gatekeeperClient);
-    sinon.stub(metrics, 'postServer').callsArg(3);
-    sinon.stub(metrics, 'postWithUser').callsArg(3);
-    sinon.stub(metrics, 'postThisUser').callsArg(3);
+
   });
 
   it('/status should respond with 200', function (done) {
