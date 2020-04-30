@@ -58,12 +58,6 @@ module.exports = (function() {
 
   env.mongoConnectionString = cs('seagull')
 
-  env.metrics = {
-    // The config object to discover highwater (the metrics API).
-    // This is just passed through to hakken.watchFromConfig()
-    serviceSpec: JSON.parse(config.fromEnvironment('METRICS_SERVICE'))
-  };
-
   env.userApi = {
     // The config object to discover user-api.  This is just passed through to hakken.watchFromConfig()
     serviceSpec: JSON.parse(config.fromEnvironment('USER_API_SERVICE')),
@@ -89,13 +83,15 @@ module.exports = (function() {
   // The service name to publish on discovery
   env.serviceName = config.fromEnvironment('SERVICE_NAME');
 
-  // info for properly tagging metrics
-  env.metricsSource = env.serviceName;
-  env.metricsVersion = require('./package.json').version;
+  env.serviceVersion = require('./package.json').version;
 
   // The local host to publish to discovery
   env.publishHost = config.fromEnvironment('PUBLISH_HOST');
 
-
+  // The log level
+  env.logLevel = config.fromEnvironment('SEAGULL_API_LOGLEVEL', 'info');
+  if (['trace', 'debug', 'info', 'warn', 'error', 'fatal'].indexOf(env.logLevel) < 0) {
+    env.logLevel = 'info';
+  }
   return env;
 })();
