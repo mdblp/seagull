@@ -1,5 +1,5 @@
 ### Stage 0 - Base image
-FROM node:10.15.3-alpine
+FROM node:10.15.3-alpine as base
 
 ARG npm_token
 ENV nexus_token=$npm_token
@@ -15,7 +15,7 @@ RUN apk --no-cache update && \
 # Only rebuild layer if `package.json` has changed
 FROM base as dependencies
 COPY package.json .
-
+COPY package-lock.json .
 COPY .npmrc .
 
 RUN \
