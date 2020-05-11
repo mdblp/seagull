@@ -6,6 +6,8 @@ The Tidepool API for managing user metadata.
 ### Changed
 - PT-1243 Remove Highwater
 - PT-1276 Integrate Tidepool master for seagull
+### Fixed
+- PT-1274 Fix status route crash
 
 ## 0.3.2 - 2020-03-30
 ### Fixed
