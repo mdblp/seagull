@@ -2,7 +2,7 @@
 
 The Tidepool API for managing user metadata.
 
-## Unreleased
+## 0.4.0 - 2020-05-14
 ### Changed
 - PT-1243 Remove Highwater
 - PT-1276 Integrate Tidepool master for seagull
