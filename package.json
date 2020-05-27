@@ -9,7 +9,9 @@
  "scripts": {
   "start": "node lib/index.js",
   "test": "mocha --exit",
-  "lint": "jshint"
+  "lint": "jshint",
+  "prebuild-doc": "mkdir -p doc",
+  "build-doc": "swagger-jsdoc -o doc/${npm_package_name}-${npm_package_version}-swagger.json -d swaggerDef.js lib/*.js"
  },
  "repository": "https://github.com/tidepool-org/seagull.git",
  "author": "Tidepool",
