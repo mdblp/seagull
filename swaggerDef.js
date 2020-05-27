@@ -6,7 +6,7 @@ module.exports =
   "info": {
     "title": "Seagull API",
     "version": pjson.version,
-    "description": "The Diabeloop API for managing user metadata",
+    "description": "The Diabeloop API for managing user metadata through collections",
     "license": {
       "name": "BSD-2-Clause",
       "url": "https://opensource.org/licenses/BSD-3-Clause"
