@@ -2,9 +2,10 @@
 
 The Tidepool API for managing user metadata.
 
-## Unreleased
+## 0.4.1 - 2020-08-04
 ### Engineering
 - Add openapi generation into the pipeline
+- PT-1449 Add SOUP generation
 
 ## 0.4.0 - 2020-05-14
 ### Changed
