@@ -12,7 +12,7 @@
   "lint": "jshint",
   "prebuild-doc": "mkdir -p doc/openapi",
   "prebuild-soup": "mkdir -p doc/soup",
-  "build-doc": "swagger-jsdoc -o doc/${npm_package_name}-${npm_package_version}-swagger.json -d swaggerDef.js lib/*.js",
+  "build-doc": "swagger-jsdoc -o doc/openapi/${npm_package_name}-${npm_package_version}-swagger.json -d swaggerDef.js lib/*.js",
   "build-soup": "release-helper gen-dep-report doc/soup/${npm_package_name}-${npm_package_version}-soup.md"
  },
  "repository": "https://github.com/tidepool-org/seagull.git",
