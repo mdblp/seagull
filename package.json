@@ -1,6 +1,6 @@
 {
  "name": "seagull",
- "version": "0.4.0",
+ "version": "0.4.1",
  "description": "API for managing user metadata.",
  "main": "lib/index.js",
  "directories": {
@@ -10,8 +10,10 @@
   "start": "node lib/index.js",
   "test": "mocha --exit",
   "lint": "jshint",
-  "prebuild-doc": "mkdir -p doc",
-  "build-doc": "swagger-jsdoc -o doc/${npm_package_name}-${npm_package_version}-swagger.json -d swaggerDef.js lib/*.js"
+  "prebuild-doc": "mkdir -p doc/openapi",
+  "prebuild-soup": "mkdir -p doc/soup",
+  "build-doc": "swagger-jsdoc -o doc/${npm_package_name}-${npm_package_version}-swagger.json -d swaggerDef.js lib/*.js",
+  "build-soup": "release-helper gen-dep-report doc/soup/${npm_package_name}-${npm_package_version}-soup.md"
  },
  "repository": "https://github.com/tidepool-org/seagull.git",
  "author": "Tidepool",
