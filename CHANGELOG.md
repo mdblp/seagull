@@ -2,6 +2,10 @@
 
 The Tidepool API for managing user metadata.
 
+## Unreleased
+### Engineering
+- Add openapi generation into the pipeline
+
 ## 0.4.0 - 2020-05-14
 ### Changed
 - PT-1243 Remove Highwater

@@ -41,6 +41,7 @@
   "jshint": "2.10.2",
   "mocha": "6.2.0",
   "salinity": "0.0.8",
-  "supertest": "4.0.2"
+  "supertest": "4.0.2",
+  "swagger-jsdoc": "^4.0.0"
  }
 }
