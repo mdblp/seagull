@@ -2,6 +2,10 @@
 
 The Tidepool API for managing user metadata.
 
+## 0.4.3 - 2020-09-22
+### Changed
+- PT-1437 Make service start without MongoDb available
+
 ## 0.4.2 - 2020-09-21
 ### Engineering
 - Fix security audit && update to mongo 4.2 
