@@ -2,6 +2,10 @@
 
 The Tidepool API for managing user metadata.
 
+## 0.4.2 - 2020-09-21
+### Engineering
+- Fix security audit && update to mongo 4.2 
+
 ## 0.4.1 - 2020-08-04
 ### Engineering
 - Add openapi generation into the pipeline
