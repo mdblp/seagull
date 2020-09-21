@@ -1,6 +1,6 @@
 {
  "name": "seagull",
- "version": "0.4.1",
+ "version": "0.4.2",
  "description": "API for managing user metadata.",
  "main": "lib/index.js",
  "directories": {
@@ -30,7 +30,7 @@
   "restify": "8.3.3",
   "restify-errors": "8.0.0",
   "tidepool-gatekeeper": "0.2.5",
-  "user-api-client": "0.5.2-rc1"
+  "user-api-client": "0.5.2"
  },
  "devDependencies": {
   "grunt": "1.0.4",
