@@ -1,6 +1,6 @@
 {
  "name": "seagull",
- "version": "0.4.3",
+ "version": "0.4.4",
  "description": "API for managing user metadata.",
  "main": "lib/index.js",
  "directories": {
@@ -44,6 +44,6 @@
   "mocha": "6.2.0",
   "salinity": "0.0.8",
   "supertest": "4.0.2",
-  "swagger-jsdoc": "^4.0.0"
+  "swagger-jsdoc": "^4.2.0"
  }
 }

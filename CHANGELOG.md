@@ -2,6 +2,10 @@
 
 The Tidepool API for managing user metadata.
 
+## 0.4.4 - 2020-09-29
+### Engineering
+- PT-1527 Base gatekeeper image on node:10-alpine
+
 ## 0.4.3 - 2020-09-22
 ### Changed
 - PT-1437 Make service start without MongoDb available
