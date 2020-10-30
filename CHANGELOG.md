@@ -2,6 +2,10 @@
 
 The Tidepool API for managing user metadata.
 
+## 0.4.5 - 2020-10-28
+### Engineering
+- YLP-253 Review openapi generation so we can serve it through a website
+
 ## 0.4.4 - 2020-09-29
 ### Engineering
 - PT-1527 Base seagull image on node:10-alpine

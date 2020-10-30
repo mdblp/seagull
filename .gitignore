@@ -24,3 +24,5 @@ deploy/
 artifact_node.sh
 
 .vscode/launch.json
+
+doc
