@@ -7,6 +7,6 @@ swagger-jsdoc -o doc/openapi/$1-$2-swagger.json -d swaggerDef.js lib/*.js
 
 # If this is not a release candidate but a "true" release, we consider this doc is the latest
 # we create a copy named "latest" to be consumed by documentation website using SwaggerUI
-if [[ ! $2 =~ rc[0-9] ]]; then
+if [[ $2 =~ [0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   cp doc/openapi/$1-$2-swagger.json doc/openapi/$1-latest-swagger.json
 fi
