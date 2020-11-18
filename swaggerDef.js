@@ -16,5 +16,19 @@ module.exports =
       "url": "https://www.diabeloop.com",
       "email": "platforms@diabeloop.fr"
     }
-  }
+  },
+  "servers": [
+    {
+      "url": "https://api.android-qa.your-loops.dev/metadata",
+      "description": "Staging for Android development team"
+    },
+    {
+      "url": "https://api.your-loops.com/metadata",
+      "description": "Commercial"
+    },
+    {
+      "url": "https://api.clinical.your-loops.com/metadata",
+      "description": "Clinical"
+    }
+  ]
 };
