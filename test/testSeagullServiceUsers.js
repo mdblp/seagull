@@ -61,8 +61,8 @@ describe('seagull/users', function () {
 
   describe('GET /users/:userid/users', function (done) {
 
-    var alphaUser, alphaProfile, alphaTrustorPermissions, alphaTrusteePermissions, alphaDoc, alphaFinal;
-    var bravoUser, bravoProfile, bravoTrustorPermissions, bravoTrusteePermissions, bravoDoc, bravoFinal;
+    var alphaUser, alphaProfile, alphaDoc, alphaFinal;
+    var bravoUser, bravoProfile, bravoDoc, bravoFinal;
     var targetUser, custodianUser;
     let targetTeams;
     let userDocs = {detail:{}};
@@ -212,20 +212,6 @@ describe('seagull/users', function () {
       expect(res.body).deep.equals({});
     }
 
-    function expectBodyWithEmptyArray(err, res) {
-      expect(res.body).deep.equals([]);
-    }
-
-    function expectBodyWithAlpha(err, res) {
-      sanitizeUsers();
-      expect(res.body).deep.equals([alphaFinal]);
-    }
-
-    function expectBodyWithBravo(err, res) {
-      sanitizeUsers();
-      expect(res.body).deep.equals([bravoFinal]);
-    }
-
     function expectBodyWithAlphaAndBravo(err, res) {
       sanitizeUsers();
       expect(res.body).deep.equals([alphaFinal, bravoFinal]);
@@ -251,41 +237,6 @@ describe('seagull/users', function () {
     }
     function expectOpaSelfAuthorizedCalled() {
       expect(mockOpaClient.selfAuthorized).to.have.been.called;
-    }
-
-    function expectGroupsForUser() {
-      expectCheckToken();
-      expect(mockOpaClient.groupsForUser).to.have.been.calledOnce;
-      expect(mockOpaClient.groupsForUser).to.have.been.calledWithExactly(targetUser.userid, sinon.match.func);
-    }
-
-    function expectUsersInGroup() {
-      expectGroupsForUser();
-      expect(mockOpaClient.usersInGroup).to.have.been.calledOnce;
-      // sinon doesn't know about async function signatures, so we have to teach it.
-      const asyncFunc = sinon.match(function (actual) {
-        return sinon.typeOf(actual) === 'asyncfunction';
-      }, 'typeOf(asyncfunction)');
-
-      expect(mockOpaClient.usersInGroup).to.have.been.calledWithExactly(targetUser.userid, asyncFunc);
-    }
-
-    function expectGetUserInfoNotCalled() {
-      expect(mockUserApiClient.getUserInfo).to.not.have.been.called;
-    }
-
-    function expectGetDocNotCalled() {
-      expect(mockCrudHandler.getDocs).to.not.have.been.called;
-    }
-
-    function expectGetDocForAlpha() {
-      expect(mockCrudHandler.getDocs).to.have.been.calledOnce;
-      expect(mockCrudHandler.getDocs).to.have.been.calledWithExactly([alphaUser.userid], sinon.match.func);
-    }
-
-    function expectGetDocForBravo() {
-      expect(mockCrudHandler.getDocs).to.have.been.calledOnce;
-      expect(mockCrudHandler.getDocs).to.have.been.calledWithExactly([bravoUser.userid], sinon.match.func);
     }
 
     function expectGetDocForAlphaAndBravo() {
