@@ -21,11 +21,14 @@
 'use strict';
 
 var _ = require('lodash');
-var salinity = require('salinity');
 
-var expect = salinity.expect;
-var sinon = salinity.sinon;
-var mockableObject = salinity.mockableObject;
+var chai = require('chai');
+var sinon = require('sinon');
+var sinonChai = require('sinon-chai');
+chai.use(sinonChai);
+var expect = chai.expect;
+
+var mockableObject = require('./mockable-object.js');
 
 var sessionTokenHeader = 'x-tidepool-session-token';
 
@@ -39,10 +42,11 @@ var env = {
 };
 
 var userApiClient = mockableObject.make('checkToken', 'getAnonymousPair');
-var gatekeeperClient = mockableObject.make('userInGroup', 'groupsForUser');
+var opaClient = mockableObject.make('isAuthorized', 'serverAuthorized', 'selfAuthorized');
+var teamsClient = mockableObject.make('getTeams', 'getPatients');
 
 var dbmongo = require('../lib/mongoCrudHandler.js')(env);
-var seagull = require('../lib/seagullService.js')(env, dbmongo, userApiClient, gatekeeperClient);
+var seagull = require('../lib/seagullService.js')(env, dbmongo, userApiClient, opaClient, teamsClient);
 var supertest = require('supertest')('http://localhost:' + env.httpPort);
 
 describe('seagull', function () {
@@ -62,8 +66,8 @@ describe('seagull', function () {
 
   beforeEach(function () {
     mockableObject.reset(userApiClient);
-    mockableObject.reset(gatekeeperClient);
-
+    mockableObject.reset(opaClient);
+    mockableObject.reset(teamsClient);
   });
 
   it('/status should respond with 200', function (done) {
@@ -120,6 +124,7 @@ describe('seagull', function () {
     it('GET should create all required objects if they don\'t exist', function (done) {
       setupToken(sally);
       sinon.stub(userApiClient, 'getAnonymousPair').callsArgWith(0, null, pair1);
+      sinon.stub(opaClient, 'serverAuthorized').returns(true);
       supertest
         .get('/sally/private/armada')
         .set(sessionTokenHeader, 'howdy')
@@ -138,6 +143,7 @@ describe('seagull', function () {
     it('GET should create just the pair if it doesn\'t exist', function (done) {
       setupToken(sally);
       sinon.stub(userApiClient, 'getAnonymousPair').callsArgWith(0, null, pair1);
+      sinon.stub(opaClient, 'serverAuthorized').returns(true);
       supertest
         .get('/sally/private/clamshell')
         .set(sessionTokenHeader, 'howdy')
@@ -155,6 +161,7 @@ describe('seagull', function () {
 
     it('GET should get the pair if it already exists', function (done) {
       setupToken(sally);
+      sinon.stub(opaClient, 'serverAuthorized').returns(true);
       supertest
         .get('/sally/private/clamshell')
         .set(sessionTokenHeader, 'howdy')
@@ -170,6 +177,7 @@ describe('seagull', function () {
 
     it('DELETE should return 501 because it doesn\'t work yet', function (done) {
       setupToken(sally);
+      sinon.stub(opaClient, 'serverAuthorized').returns(true);
       supertest
         .del('/sally/private/armada')
         .set(sessionTokenHeader, 'howdy')
@@ -185,6 +193,7 @@ describe('seagull', function () {
     it('GET should fail with a non-server token', function (done) {
       setupToken();
       sinon.stub(userApiClient, 'getAnonymousPair').callsArgWith(0, null, pair1);
+      sinon.stub(opaClient, 'serverAuthorized').returns(false);
       supertest
         .get('/billy/private/armada')
         .set(sessionTokenHeader, 'howdy')
@@ -208,10 +217,10 @@ describe('seagull', function () {
       units: {'bg': 'mg/dL'}
     };
     var sally = { userid: 'sally', isserver: true };
-
+    var sallyNotServer = { userid: 'sally' };
     it('GET should return 404 because it doesn\'t exist yet (server)', function (done) {
       setupToken(sally);
-      sinon.stub(gatekeeperClient, 'groupsForUser').callsArgWith(1, null, {'sally': {root: {}}});
+      sinon.stub(opaClient, 'isAuthorized').returns(true);
       supertest
         .get('/billy/profile')
         .set(sessionTokenHeader, 'howdy')
@@ -226,7 +235,7 @@ describe('seagull', function () {
 
     it('GET should return 404 because it doesn\'t exist yet (same user id)', function (done) {
       setupToken();
-      sinon.stub(gatekeeperClient, 'groupsForUser').callsArgWith(1, null, {'sally': {root: {}}});
+      sinon.stub(opaClient, 'isAuthorized').returns(true);
       supertest
         .get('/billy/profile')
         .set(sessionTokenHeader, 'howdy')
@@ -241,9 +250,7 @@ describe('seagull', function () {
 
     it('GET should return 404 because it doesn\'t exist yet (with different user ids; with member permissions)', function (done) {
       setupToken();
-      sinon.stub(gatekeeperClient, 'groupsForUser').callsArgWith(1, null, {'sally': {root: {}}});
-      var userInGroupStub = sinon.stub(gatekeeperClient, 'userInGroup');
-      userInGroupStub.callsArgWith(2, null, {'view': {}});
+      sinon.stub(opaClient, 'isAuthorized').returns(true);
       supertest
         .get('/bob/profile')
         .set(sessionTokenHeader, 'howdy')
@@ -252,15 +259,14 @@ describe('seagull', function () {
         function (err, res) {
           expect(err).to.not.exist;
           expectToken('howdy');
-          expect(userInGroupStub).to.have.been.called.once;
+          expect(opaClient.isAuthorized).to.have.been.calledOnce;
           done();
         });
     });
 
     it('GET should return 401 because it is a different user id without member permissions or server', function (done) {
       setupToken();
-      var userInGroupStub = sinon.stub(gatekeeperClient, 'userInGroup');
-      userInGroupStub.callsArgWith(2);
+      sinon.stub(opaClient, 'isAuthorized').returns(false);
       supertest
         .get('/bob/profile')
         .set(sessionTokenHeader, 'howdy')
@@ -269,13 +275,14 @@ describe('seagull', function () {
         function (err, res) {
           expect(err).to.not.exist;
           expectToken('howdy');
-          expect(userInGroupStub).to.have.been.called.twice;
+          expect(opaClient.isAuthorized).to.have.been.calledOnce;
           done();
         });
     });
 
     it('POST should return a 200 on success (server)', function (done) {
       setupToken(sally);
+      sinon.stub(opaClient, 'selfAuthorized').returns(true);
       supertest
         .post('/billy/profile')
         .send(metatest1)
@@ -292,6 +299,7 @@ describe('seagull', function () {
 
     it('POST should return a 200 on success (same user)', function (done) {
       setupToken();
+      sinon.stub(opaClient, 'selfAuthorized').returns(true);
       supertest
         .post('/billy/profile')
         .send(metatest1)
@@ -307,27 +315,13 @@ describe('seagull', function () {
     });
 
     it('POST should return a 200 on success (with different user ids; with custodian permissions)', function (done) {
-      setupToken();
-      var userInGroupStub = sinon.stub(gatekeeperClient, 'userInGroup');
-      userInGroupStub.callsArgWith(2, null, {'custodian': {}});
-      supertest
-        .post('/bob/profile')
-        .send(metatest1)
-        .set(sessionTokenHeader, 'howdy')
-        .expect(200)
-        .end(
-        function (err, res) {
-          expect(err).to.not.exist;
-          expect(res.body).deep.equals(metatest1);
-          expectToken('howdy');
-          done();
-        });
+      // Not relevant: no more custodian authz
+      done()
     });
 
     it('POST should return a 401 on authorization failure (with different user ids; with no permissions)', function (done) {
       setupToken();
-      var userInGroupStub = sinon.stub(gatekeeperClient, 'userInGroup');
-      userInGroupStub.callsArgWith(2);
+      sinon.stub(opaClient, 'selfAuthorized').returns(false);
       supertest
         .post('/bob/profile')
         .send(metatest1)
@@ -343,26 +337,13 @@ describe('seagull', function () {
     });
 
     it('POST should return a 401 on authorization failure (with different user ids; with other than custodial permissions)', function (done) {
-      setupToken();
-      var userInGroupStub = sinon.stub(gatekeeperClient, 'userInGroup');
-      userInGroupStub.callsArgWith(2, null, {'view': {}});
-      supertest
-        .post('/bob/profile')
-        .send(metatest1)
-        .set(sessionTokenHeader, 'howdy')
-        .expect(401)
-        .end(
-        function (err, res) {
-          expect(err).to.not.exist;
-          expect(res.body).deep.equals('Unauthorized');
-          expectToken('howdy');
-          done();
-        });
+      // Not relevant: no more custodian authz
+      done()
     });
 
     it('GET profile should return 200 and only fullName if not a trustor', function (done) {
-      setupToken();
-      sinon.stub(gatekeeperClient, 'groupsForUser').callsArgWith(1, null, {'sally': {root: {}}});
+      setupToken(sallyNotServer);
+      sinon.stub(opaClient, 'isAuthorized').returns(true);
       supertest
         .get('/billy/profile')
         .set(sessionTokenHeader, 'howdy')
@@ -378,7 +359,7 @@ describe('seagull', function () {
 
     it('GET profile should return 200 and full stored result if a trustor', function (done) {
       setupToken();
-      sinon.stub(gatekeeperClient, 'groupsForUser').callsArgWith(1, null, {'sally': {root: {}}, 'billy': {view: {}}});
+      sinon.stub(opaClient, 'isAuthorized').returns(true);
       supertest
         .get('/billy/profile')
         .set(sessionTokenHeader, 'howdy')
@@ -394,6 +375,7 @@ describe('seagull', function () {
 
     it('GET profile should return 200 and full stored result if request is from the server', function (done) {
       setupToken(sally);
+      sinon.stub(opaClient, 'isAuthorized').returns(true);
       supertest
         .get('/billy/profile')
         .set(sessionTokenHeader, 'howdy')
@@ -409,6 +391,7 @@ describe('seagull', function () {
 
     it('PUT non-profile should return a 200 on success (server)', function (done) {
       setupToken(sally);
+      sinon.stub(opaClient, 'selfAuthorized').returns(true);
       supertest
         .post('/billy/settings')
         .send(settingstest)
@@ -425,7 +408,7 @@ describe('seagull', function () {
 
     it('GET non-profile should return 401 if not a trustor', function (done) {
       setupToken();
-      sinon.stub(gatekeeperClient, 'groupsForUser').callsArgWith(1, null, {'sally': {root: {}}});
+      sinon.stub(opaClient, 'isAuthorized').returns(false);
       supertest
         .get('/billy/settings')
         .set(sessionTokenHeader, 'howdy')
@@ -441,7 +424,7 @@ describe('seagull', function () {
 
     it('GET non-profile should return 200 and full stored result if a trustor', function (done) {
       setupToken();
-      sinon.stub(gatekeeperClient, 'groupsForUser').callsArgWith(1, null, {'sally': {root: {}}, 'billy': {view: {}}});
+      sinon.stub(opaClient, 'isAuthorized').returns(true);
       supertest
         .get('/billy/settings')
         .set(sessionTokenHeader, 'howdy')
@@ -457,6 +440,7 @@ describe('seagull', function () {
 
     it('GET non-profile should return 200 and full stored result if request is from the server', function (done) {
       setupToken(sally);
+      sinon.stub(opaClient, 'isAuthorized').returns(true);
       supertest
         .get('/billy/settings')
         .set(sessionTokenHeader, 'howdy')
@@ -472,6 +456,7 @@ describe('seagull', function () {
 
     it('PUT should return a 200 on success (server)', function (done) {
       setupToken(sally);
+      sinon.stub(opaClient, 'selfAuthorized').returns(true);
       supertest
         .post('/billy/profile')
         .send(metatest2)
@@ -488,6 +473,7 @@ describe('seagull', function () {
 
     it('PUT should return a 200 on success (same user)', function (done) {
       setupToken();
+      sinon.stub(opaClient, 'selfAuthorized').returns(true);
       supertest
         .post('/billy/profile')
         .send(metatest2)
@@ -503,27 +489,13 @@ describe('seagull', function () {
     });
 
     it('PUT should return a 200 on success (with different user ids; with custodian permissions)', function (done) {
-      setupToken();
-      var userInGroupStub = sinon.stub(gatekeeperClient, 'userInGroup');
-      userInGroupStub.callsArgWith(2, null, {'custodian': {}});
-      supertest
-        .post('/bob/profile')
-        .send(metatest2)
-        .set(sessionTokenHeader, 'howdy')
-        .expect(200)
-        .end(
-        function (err, res) {
-          expect(err).to.not.exist;
-          expect(res.body).deep.equals(_.extend(_.cloneDeep(metatest1), metatest2));
-          expectToken('howdy');
-          done();
-        });
+      // Not relevant: no more custodian authz
+      done();
     });
 
     it('PUT should return a 401 on authorization failure (with different user ids; with no permissions)', function (done) {
       setupToken();
-      var userInGroupStub = sinon.stub(gatekeeperClient, 'userInGroup');
-      userInGroupStub.callsArgWith(2);
+      sinon.stub(opaClient, 'selfAuthorized').returns(false);
       supertest
         .post('/bob/profile')
         .send(metatest2)
@@ -539,26 +511,13 @@ describe('seagull', function () {
     });
 
     it('PUT should return a 401 on authorization failure (with different user ids; with other than custodial permissions)', function (done) {
-      setupToken();
-      var userInGroupStub = sinon.stub(gatekeeperClient, 'userInGroup');
-      userInGroupStub.callsArgWith(2, null, {'view': {}});
-      supertest
-        .post('/bob/profile')
-        .send(metatest1)
-        .set(sessionTokenHeader, 'howdy')
-        .expect(401)
-        .end(
-        function (err, res) {
-          expect(err).to.not.exist;
-          expect(res.body).deep.equals('Unauthorized');
-          expectToken('howdy');
-          done();
-        });
+      // Not relevant: no more custodian authz
+      done();
     });
 
     it('GET should return 200 and updated result on success', function (done) {
       setupToken();
-      sinon.stub(gatekeeperClient, 'groupsForUser').callsArgWith(1, null, {'billy': {root: {}}});
+      sinon.stub(opaClient, 'isAuthorized').returns(true);
       supertest
         .get('/billy/profile')
         .set(sessionTokenHeader, 'howdy')
@@ -574,6 +533,7 @@ describe('seagull', function () {
 
     it('DELETE should return 501 because it doesn\'t work yet', function (done) {
       setupToken();
+      sinon.stub(opaClient, 'selfAuthorized').returns(true);
       supertest
         .del('/billy/profile')
         .set(sessionTokenHeader, 'howdy')
@@ -589,21 +549,25 @@ describe('seagull', function () {
 
   describe('/:userid/private', function () {
     it('should return 404 on GET', function (done) {
+      sinon.stub(opaClient, 'serverAuthorized').returns(true);
       supertest.get('/billy/private')
         .expect(404, done);
     });
 
     it('should return 404 on POST', function (done) {
+      sinon.stub(opaClient, 'serverAuthorized').returns(true);
       supertest.post('/billy/private')
         .expect(404, done);
     });
 
     it('should return 404 on PUT', function (done) {
+      sinon.stub(opaClient, 'serverAuthorized').returns(true);
       supertest.put('/billy/private')
         .expect(404, done);
     });
 
     it('should return 404 on DELETE', function (done) {
+      sinon.stub(opaClient, 'serverAuthorized').returns(true);
       supertest.del('/billy/private')
         .expect(404, done);
     });
