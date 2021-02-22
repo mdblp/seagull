@@ -2,6 +2,10 @@
 
 The Tidepool API for managing user metadata.
 
+## 0.5.0 - 2021-02-16
+### Changed
+- YLP-474 Implement authorization rules for seagull
+
 ## 0.4.5 - 2020-10-28
 ### Engineering
 - YLP-253 Review openapi generation so we can serve it through a website

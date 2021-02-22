@@ -20,7 +20,11 @@
 
 'use strict';
 
-var expect = require('salinity').expect;
+var chai = require('chai');
+var sinon = require('sinon');
+var sinonChai = require('sinon-chai');
+chai.use(sinonChai);
+var expect = chai.expect;
 // expect violates this jshint thing a lot, so we just suppress it
 /* jshint expr: true */
 
@@ -70,6 +74,9 @@ describe('metadb:', function () {
     it('should have getDoc method', function () {
       expect(metadb).to.respondTo('getDoc');
     });
+    it('should have getDocs method', function () {
+      expect(metadb).to.respondTo('getDocs');
+    });
     it('should have partialUpdate method', function () {
       expect(metadb).to.respondTo('partialUpdate');
     });
@@ -97,6 +104,10 @@ describe('metadb:', function () {
       shortname: 'Boo',
       bio: 'Haunting is my game.'
     };
+
+    const multiMetaTests = {}
+    multiMetaTests[userId1]=metatest1
+    multiMetaTests[userId2]=metatest2
 
     it('should have a good status return', function (done) {
       metadb.status(function (err, result) {
@@ -193,6 +204,15 @@ describe('metadb:', function () {
         done();
       });
     });
+
+    it('should be able to fetch multiple objects', function (done) {
+      metadb.getDocs([userId1,userId2], function (err, result) {
+        shouldSucceed(err, result, 200);
+        expect(result.detail).to.deep.equal(multiMetaTests);
+        done();
+      });
+    });
+
 
     it('should be able to modify a field', function (done) {
       var newname = 'BooBoo';
