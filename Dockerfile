@@ -43,6 +43,6 @@ COPY --from=dependencies /app/production_node_modules ./node_modules
 COPY --chown=node:node . .
 RUN apk del .build-dependencies && \
     rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm && \
-    rm package-lock.json package.json
+    rm package.json
 USER node
 CMD ["node", "lib/index.js"]
