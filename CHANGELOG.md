@@ -2,6 +2,10 @@
 
 The Tidepool API for managing user metadata.
 
+## 0.5.1 - 2021-03-05
+### Fixed
+- Remove legacy gatekeeper url (env var)
+
 ## 0.5.0 - 2021-02-16
 ### Changed
 - YLP-474 Implement authorization rules for seagull
