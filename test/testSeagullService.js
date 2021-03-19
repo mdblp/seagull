@@ -21,7 +21,7 @@
 'use strict';
 
 var _ = require('lodash');
-
+var config = require('amoeba').config;
 var chai = require('chai');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
@@ -31,10 +31,10 @@ var expect = chai.expect;
 var mockableObject = require('./mockable-object.js');
 
 var sessionTokenHeader = 'x-tidepool-session-token';
-
+var connString = config.fromEnvironment('MONGO_CONN_STRING', 'mongodb://localhost/seagull_test');
 var env = {
   httpPort: 21000,
-  mongoConnectionString: 'mongodb://localhost/seagull_test',
+  mongoConnectionString: connString,
   // the special config value we pass for testing will enable us to wipe the database
   _wipeTheEntireDatabase: true,
   logger: { error: console.log, warn: console.log, info: console.log },
