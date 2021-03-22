@@ -2,6 +2,10 @@
 
 The Tidepool API for managing user metadata.
 
+## 0.5.2 - 2021-03-18
+### Fixed
+- Requests to Crew (teams) did not send auth token
+
 ## 0.5.1 - 2021-03-05
 ### Fixed
 - Remove legacy gatekeeper url (env var)

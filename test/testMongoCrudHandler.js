@@ -24,12 +24,13 @@ var chai = require('chai');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
 chai.use(sinonChai);
+var config = require('amoeba').config;
 var expect = chai.expect;
 // expect violates this jshint thing a lot, so we just suppress it
 /* jshint expr: true */
-
+var connString = config.fromEnvironment('MONGO_CONN_STRING', 'mongodb://localhost/seagull_test');
 var metadb = require('../lib/mongoCrudHandler.js')({
-  mongoConnectionString: 'mongodb://localhost/seagull_test',
+  mongoConnectionString: connString,
   // the special config value we pass for testing will enable us to wipe the database
   _wipeTheEntireDatabase: true,
   adminKey: 'specialkey',
