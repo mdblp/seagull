@@ -60,7 +60,7 @@ pipeline {
             }
         }
         stage('Publish') {
-            when { branch "main" }
+            when { branch "dblp" }
             steps {
                 publish()
             }
