@@ -2,6 +2,10 @@
 
 The Tidepool API for managing user metadata.
 
+## 0.5.3 - 2021-05-06
+### Engineering
+- YLP-752 Fix depandabot alert
+
 ## 0.5.2 - 2021-03-18
 ### Fixed
 - Requests to Crew (teams) did not send auth token
