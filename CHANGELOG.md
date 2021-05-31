@@ -2,6 +2,10 @@
 
 The Tidepool API for managing user metadata.
 
+## Unreleased
+### Engineering
+YLP-756 Bump some dependencies
+
 ## 0.5.3 - 2021-05-06
 ### Engineering
 - YLP-752 Fix depandabot alert
