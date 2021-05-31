@@ -14,7 +14,7 @@ pipeline {
                 }
             }
         }
-        stage('Build ') {
+        stage('Build') {
             agent {
                 docker {
                     image "docker.ci.diabeloop.eu/node-build:12"
@@ -27,7 +27,7 @@ pipeline {
                 }
             }
         }
-        stage('Test ') {
+        stage('Test') {
             steps {
                 unstash "test"
                 echo 'start mongo to serve as a testing db'
