@@ -18,8 +18,6 @@
                 "PORT":"9120",
                 "USER_API_SERVICE":"{\"type\":\"static\", \"hosts\":[{\"protocol\":\"http\", \"host\":\"localhost:9107\"}]}",
                 "GATEKEEPER_SECRET":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-                "DISCOVERY_HOST":"localhost:8000",
-                "PUBLISH_HOST":"hakken",
                 "MONGO_CONNECTION_STRING":"mongodb://xxxxx:xxxxx@localhost:27017/seagull?authSource=admin&ssl=false",
             }
         }
