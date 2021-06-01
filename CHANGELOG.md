@@ -2,7 +2,7 @@
 
 The Tidepool API for managing user metadata.
 
-## Unreleased
+## 0.5.4 - 2021-06-01
 ### Engineering
 YLP-756 Bump some dependencies
 
