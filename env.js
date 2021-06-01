@@ -59,7 +59,6 @@ module.exports = (function() {
   env.mongoConnectionString = cs('seagull')
 
   env.userApi = {
-    // The config object to discover user-api.  This is just passed through to hakken.watchFromConfig()
     serviceSpec: JSON.parse(config.fromEnvironment('USER_API_SERVICE')),
 
     // Name of this server to pass to user-api when getting a server token
@@ -69,19 +68,10 @@ module.exports = (function() {
     serverSecret: config.fromEnvironment('SERVER_SECRET')
   };
 
-  env.discovery = {
-    // The host to connect to for discovery
-    host: config.fromEnvironment('DISCOVERY_HOST'),
-    skipHakken: config.fromEnvironment('SKIP_HAKKEN', false)
-  };
-
   // The service name to publish on discovery
   env.serviceName = config.fromEnvironment('SERVICE_NAME');
 
   env.serviceVersion = require('./package.json').version;
-
-  // The local host to publish to discovery
-  env.publishHost = config.fromEnvironment('PUBLISH_HOST');
 
   // The log level
   env.logLevel = config.fromEnvironment('SEAGULL_API_LOGLEVEL', 'info');
